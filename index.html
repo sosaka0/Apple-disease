@@ -1,0 +1,660 @@
+
+-->
+<!DOCTYPE html>
+<html lang="en" class="gradient">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- Primary Meta Tags -->
+    <title>Elma Hastalık Tespiti</title>
+    <meta name="title" content="ML Photo Scanner">
+    <meta name="description" content="Scan photos using machine learning.">
+
+    
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/k2kfG5V/android-chrome-192x192.png">
+</head>
+<body onload="loaded()">
+    <div class="spinner" id="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
+    <p class="loading-text" id="loading-text">Model Yükleniyor</p>
+    <div class="loading gradient" id="loading"></div>
+    <div class="card">
+        <div class="content">
+            <div class="input-image-holder gradient">
+                <div class="input-image">
+                    <svg id="plus-icon" width="864" height="864" viewBox="0 0 864 864" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M432 280V583M280 432H583M824 432C824 648.496 648.496 824 432 824C215.504 824 40 648.496 40 432C40 215.504 215.504 40 432 40C648.496 40 824 215.504 824 432Z" stroke="white" stroke-width="80" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>    
+                    <input type="file"
+                        id="input" name="input"
+                        accept="image/png, image/jpeg"
+                        onchange="onFileSelected(event)"
+                    >
+                    <div id="scanner"></div>
+                    <img id="image">
+                    <img id="image-bg">
+                </div>
+            </div>
+            <div class="results">
+                <h1 id="title"></h1>
+                <h2>Built with Googles Teachable Machine Learning.</h2>
+                <div class="data" id="data">
+                    <!-- Filled by First Load Function -->
+                </div>
+            </div>
+        </div>
+        <a id="link" target="_blank" href="#">
+            ML Model Link
+            <svg width="14" height="14" viewBox="0 0 513 483" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 31.5C0 14.103 14.103 0 31.5 0H202.5C219.897 0 234 14.103 234 31.5C234 48.897 219.897 63 202.5 63H63V420H437.5V336C437.5 318.603 451.603 304.5 469 304.5C486.397 304.5 500.5 318.603 500.5 336V451.5C500.5 468.897 486.397 483 469 483H31.5C14.103 483 0 468.897 0 451.5V31.5Z" fill="black"/>
+                <path d="M120 289.762V363H192.245L440.516 164.456L475.492 204.508L499 34L325.268 60.32L368.271 103.233L120 289.762Z" fill="black"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M508.482 24.3907C511.513 27.3812 512.955 31.6262 512.374 35.844L488.865 206.352C488.143 211.592 484.426 215.928 479.357 217.443C474.289 218.957 468.803 217.372 465.323 213.388L438.851 183.073L200.677 373.543C198.283 375.457 195.31 376.5 192.245 376.5H120C112.544 376.5 106.5 370.456 106.5 363V289.762C106.5 285.517 108.497 281.519 111.891 278.969L347.714 101.792L315.732 69.8761C312.125 66.2769 310.852 60.9535 312.44 56.112C314.029 51.2704 318.208 47.7357 323.246 46.9724L496.978 20.6524C501.188 20.0147 505.451 21.4002 508.482 24.3907ZM353.74 69.6607L377.807 93.6772C380.577 96.442 382.012 100.273 381.738 104.177C381.464 108.082 379.509 111.675 376.38 114.026L133.5 296.505V349.5H187.511L432.084 153.913C437.73 149.398 445.93 150.131 450.684 155.576L466.166 173.305L483.159 50.0541L353.74 69.6607Z" fill="black"/>
+            </svg> 
+        </a>
+    </div>
+    <div class="info">
+        <p>Created by Sosaka0</p>
+        <a href="https://twitter.com" target="_blank">
+            <svg width="20" height="20" viewBox="0 0 566 464" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M558 62.6806C556.687 58.9021 556.687 58.9021 556.687 58.9021L556.687 58.9024L556.684 58.9034L556.672 58.9075L556.625 58.9238L556.44 58.9879L555.729 59.2343C555.112 59.448 554.221 59.7567 553.122 60.1361C550.924 60.8949 547.9 61.9363 544.594 63.0668C537.964 65.3335 530.252 67.9398 525.77 69.3532C522.244 70.4654 516.161 71.773 510.118 72.9385C514.755 69.1503 519.88 64.5465 524.243 59.6087C530.09 52.9909 535.773 42.8093 539.907 34.5597C542 30.3822 543.744 26.6019 544.965 23.8654C545.576 22.4961 546.057 21.3856 546.386 20.6143C546.551 20.2285 546.678 19.9275 546.765 19.721C546.808 19.6178 546.841 19.5383 546.864 19.4836L546.89 19.4205L546.898 19.4032L546.9 19.3982L546.9 19.3966C546.901 19.396 546.901 19.3956 543.203 17.8709L546.901 19.3956C547.547 17.8293 547.135 16.026 545.875 14.8943C544.614 13.7625 542.777 13.5478 541.289 14.3582L541.289 14.3584L541.287 14.3596L541.277 14.3651L541.234 14.3882L541.06 14.4822C540.906 14.5655 540.676 14.6895 540.377 14.8501C539.777 15.1715 538.899 15.6395 537.791 16.2226C535.573 17.3891 532.436 19.0146 528.766 20.8468C521.406 24.5219 511.989 28.9865 503.568 32.2568C495.282 35.4751 486.586 37.565 479.915 38.8507C476.591 39.4914 473.795 39.9275 471.837 40.2027C471.508 40.249 471.203 40.2907 470.923 40.328C450.349 15.6473 419.121 2.31604 386.98 4.60881L377.284 5.30043C377.081 5.31491 376.88 5.34485 376.681 5.38999L358.976 9.41875C321.786 17.8813 291.724 45.1674 279.71 81.3666L278.722 84.3418C272.917 101.833 271.253 120.434 273.863 138.678L274.555 143.516L260.792 142.124C177.423 133.692 100.927 92.1472 48.4655 26.8073C47.6409 25.7804 46.3637 25.2251 45.0502 25.3226C43.7368 25.4202 42.5556 26.158 41.8917 27.2955C14.4838 74.2594 23.5646 133.983 63.6928 170.678L67.2508 173.931C55.1709 171.839 43.4701 167.89 32.5688 162.21L31.4429 161.624C30.2454 161 28.8139 161.022 27.6365 161.683C26.4591 162.344 25.6946 163.554 25.6036 164.901C23.7014 193.08 33.4909 220.797 52.668 241.53L61.6145 251.202C71.3912 261.772 83.6478 269.739 97.2765 274.383L105.016 277.019C93.4516 278.962 81.5885 278.679 70.0714 276.148C68.6716 275.841 67.2142 276.306 66.251 277.367C65.2878 278.428 64.966 279.924 65.4074 281.287C78.4887 321.694 112.864 351.539 154.708 358.816L164.837 360.578C121.758 391.226 69.2397 405.949 16.3234 402.025L8.41046 401.438C6.56594 401.301 4.86817 402.447 4.30474 404.209C3.74131 405.97 4.45916 407.889 6.04072 408.848L12.9896 413.061C52.9349 437.281 97.9135 452.559 144.328 457.787C341.821 480.031 513.807 321.091 505.765 122.805C506.1 122.557 506.479 122.276 506.897 121.963C508.707 120.609 511.261 118.662 514.251 116.279C520.22 111.523 527.983 104.984 535.051 97.9264C542.172 90.8143 548.75 82.533 553.519 76.0822C555.912 72.846 557.866 70.0475 559.224 68.0541C559.904 67.057 560.435 66.2603 560.799 65.7098C560.98 65.4345 561.12 65.2207 561.216 65.074C561.263 65.0007 561.3 64.9442 561.325 64.9052L561.354 64.8598L561.362 64.8472L561.365 64.8434L561.366 64.8421C561.366 64.8417 561.366 64.8413 558 62.6806ZM558 62.6806L556.687 58.9021C558.298 58.3425 560.087 58.8657 561.142 60.2053C562.197 61.5449 562.287 63.4062 561.366 64.8413L558 62.6806Z" fill="white" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+        <a href="https://github.com/sosaka0" target="_blank">
+            <svg width="20" height="20" viewBox="0 0 563 556" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M563 281.5C563 126.032 436.968 0 281.5 0C126.032 0 0 126.032 0 281.5C0 415.171 93.1685 527.081 218.11 555.834V515V475.084C218.11 475.084 197.844 479.588 174.199 477.711C150.554 475.835 139.949 467.473 131.415 458.947C122.88 450.422 111.15 417.264 101.768 407.507C94.5894 400.042 82.8708 396.326 79.554 390.286C77.5129 386.57 81.4605 382.61 85.7039 382.552C108.665 382.243 141.967 421.923 141.967 421.923C141.967 421.923 158.813 441.684 183.207 441.684C198.785 441.684 209.925 438.47 215.942 436.147C219.184 434.895 220.835 431.587 221.033 428.118C221.56 418.881 225.272 410.042 231.635 403.16L238.002 396.274C238.002 396.274 195.592 392.521 159.188 371.505C159.188 371.505 101.768 350.773 101.768 274.042C101.768 197.311 136.295 176.354 136.295 176.354C136.295 176.354 129.539 152.336 130.665 136.198C131.442 125.062 135.793 111.603 138.416 104.329C139.595 101.061 142.601 98.8669 146.077 99.0063C152.797 99.2757 164.904 100.685 179.079 106.55C200.847 115.557 219.612 129.443 219.612 129.443C219.612 129.443 249.505 116.86 284.886 117.79C320.267 118.72 350.156 129.681 350.156 129.681C350.156 129.681 368.921 115.795 390.689 106.788C404.864 100.923 416.971 99.5134 423.691 99.244C427.167 99.1046 430.173 101.298 431.352 104.567C433.974 111.84 438.326 125.3 439.103 136.436C440.229 152.573 433.473 176.592 433.473 176.592C433.473 176.592 468 197.549 468 274.279C468 351.01 410.58 371.742 410.58 371.742C374.175 392.759 331.766 396.511 331.766 396.511C344.005 402.99 351.658 415.694 351.658 429.531L352.155 512.5L351.658 554.187C473.181 523.013 563 412.746 563 281.5Z" fill="white"/>
+            </svg>     
+        </a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    // VVVVVVVVV PUT YOUR LINK HERE VVVVVVVVV
+    const URL = "https://teachablemachine.withgoogle.com/models/z1LnksA3Z/"; // Apple
+    // const URL = "https://teachablemachine.withgoogle.com/models/6fdR3a5Um/"; // Rate your setup model
+
+    // VVVVVVVVV Name The Project Here VVVVVVVVV
+    const projectTitle = "Elma Hastalığı"
+
+    let model, labelContainer, maxPredictions;
+
+    function onFileSelected(event) {
+        var selectedFile = event.target.files[0];
+        var reader = new FileReader();
+
+        var imgTag = document.getElementById("image");
+        var imgTag2 = document.getElementById("image-bg");
+        imgTag.title = selectedFile.name;
+        imgTag2.title = selectedFile.name;
+
+        //Start Scanner animation
+        document.getElementById("scanner").classList.add('scanner-active');
+
+        reader.onload = function(event) {
+            imgTag.src = event.target.result;
+            imgTag2.src = event.target.result;
+            document.getElementById("plus-icon").classList.add('svg-small');
+        };
+
+        reader.readAsDataURL(selectedFile);
+        init();
+    }
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+
+        maxPredictions = model.getTotalClasses();
+
+        predict(document.getElementById('image'))
+    }
+
+    async function firstLoad() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        const labels = model.getClassLabels();
+        document.getElementById('title').innerHTML = projectTitle;
+        document.title = projectTitle;
+        const data = document.getElementById('data');
+        document.getElementById("link").href = URL;
+
+        console.log('Created By sosaka0');
+        console.log('Using Googles Teachable Machine')
+
+        console.log('Labels:')
+        for (var i = 0; i < labels.length; i++) {
+            console.log(labels[i]);
+            data.innerHTML = data.innerHTML + `
+                <div class="metric slide-in-bottom" style="animation-delay: ${1.2 + i}s">
+                    <h3>${labels[i]}</h3>
+                    <div class="bar" id="bar${[i]}">
+                        <span class="bar-text">0%</span>
+                        <div  class="bar-inner"></div>
+                    </div>
+                </div>
+            `
+        };
+    }
+
+    async function predict(file) {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(file);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction = prediction[i].className;
+            const predictionValue = `${(prediction[i].probability * 100).toFixed(0) }%`;
+            document.getElementById(`bar${i}`).getElementsByClassName( 'bar-text' )[0].innerHTML = predictionValue;
+            document.getElementById(`bar${i}`).getElementsByClassName( 'bar-inner' )[0].style.width = predictionValue;
+        }
+        // stop scanner animation
+        document.getElementById("scanner").classList.remove('scanner-active');
+    }
+
+    const sleep = (time) => new Promise(r => setTimeout(r, time))
+
+    async function loaded() {
+        await firstLoad();
+        const loading = document.getElementById('loading');
+        const spinner = document.getElementById('spinner');
+        const loadingText = document.getElementById('loading-text');
+        loading.classList.add('hide');
+        await sleep(1000);
+        spinner.style.opacity = 0;
+        loadingText.style.opacity = 0;
+        await sleep(1000);
+        loading.classList.add('hidden');
+        spinner.classList.add('hidden');
+    }
+
+    </script>
+</body>
+<style>
+    * {
+        font-family: arial, sans-serif;
+        transition-duration: 0.2s;
+    }
+
+    .gradient {
+        background: #36D1DC;  /* fallback for old browsers */
+        background: -webkit-linear-gradient(to bottom right, #5B86E5, #36D1DC);  /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to bottom right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
+
+    .slide-in-bottom {
+        -webkit-animation: slide-in-bottom 0.5s both;
+                animation: slide-in-bottom 0.5s both;
+                transition-duration: 1s;
+    }
+
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        width: 70vw;
+        max-width: 1000px;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 4px 13px 30px 1px #00000030;
+    }
+
+    .content {
+        width: 70vw;
+        max-width: 1000px;
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+    }
+
+    #link {
+        margin: 0;
+        font-weight: bold;
+        color: lightgrey;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #link svg {
+        margin-left: 10px;
+        opacity: 0.2;
+    }
+
+    h1 {
+        margin: 2px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 14px;
+        margin-bottom: 40px;
+        font-weight: bold;
+        color: grey;
+        text-align: center;
+    }
+
+    #scanner {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        height: 10px;
+        background-color: #72CBE5;
+    }
+
+    .scanner-active {
+        opacity: 1 !important;
+        -webkit-animation: scanner 2.0s infinite alternate ease-in-out;
+        animation: scanner 2.0s infinite alternate ease-in-out;
+    }
+
+    .input-image:hover > svg {
+        transform: scale(1.1);
+    }
+
+    .input-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 380px;
+        width: 380px;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .input-image svg {
+        z-index: 1;
+        position: absolute;
+        height: 150px;
+        width: 150px;
+        opacity: 0.6;
+        transition-duration: 0.4s;
+    }
+
+    .svg-small {
+        left: -32px;
+        bottom: 27px;
+        height: 39px !important;
+    }
+
+    .input-image img {
+        width: auto;
+        max-height: 380px;
+        max-width: 380px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    #image-bg {
+        position: absolute;
+        z-index: -1;
+        width: 500px;
+        height: 500px;
+        object-fit: cover;
+        opacity: 0.2;
+        filter: blur(2px);
+    }
+
+    .input-image input {
+        z-index: 2;
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 100%;
+        width: 100%;
+    }
+
+    .input-image-holder {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42vw;
+        max-width: 400px;
+        height: 42vw;
+        max-height: 400px;
+        overflow: hidden;
+        border-radius: 20px;
+        box-shadow: 4px 13px 30px 1px #3c9abfb8;
+        transform: translateX(-80px);
+    }
+
+    .results {
+        height: 100%;
+        width: 70%;
+        margin-left: 30%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .data {
+        width: 80%;
+    }
+
+    .metric {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .bar {
+        margin: 10px;
+        height: 20px;
+        width: 300px;
+        background: rgb(218, 218, 218);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+    .bar div {
+        width: 0%;
+        height: 20px;
+        transition-duration: 1s;
+    }
+
+    .bar span {
+        color: white;
+        position: absolute;
+        width: 300px;
+        font-weight: bold;
+    }
+
+    #bar0 div {
+        background: rgb(0, 157, 255);
+    }
+
+    #bar1 div {
+        background: rgb(255, 0, 119);
+    }
+
+    #bar2 div {
+        background: rgb(170, 0, 255);
+    }
+
+    #bar3 div {
+        background: rgb(0, 255, 136);
+    }
+
+    .info {
+        color: white;
+        font-weight: bold;
+        position: fixed;
+        bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .info p {
+        margin-right: 4px;
+    }
+
+    .info svg {
+        margin: 0 6px;
+    }
+
+    .loading-text {
+        color: white;
+        position: absolute;
+        transform: translateY(100px);
+        z-index: 12;
+        font-weight: bold;
+        font-size: 1.4rem;
+        text-align: center;
+        opacity: 0.8;
+    }
+
+    @media only screen and (max-width: 1300px) {
+
+        .results {
+            width: 60%;
+            margin-left: 40%;
+        }
+
+        .metric {
+            flex-direction: column;
+        }
+
+        .bar {
+            width: 200px;
+        }
+
+        .bar-text {
+            width: 200px !important;
+        }
+
+        h3 {
+            margin-bottom: 2px;
+        }
+    }
+
+    @media only screen and (max-width: 1000px) {
+        .results {
+            width: 45%;
+            margin-left: 55%;
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+
+        body { width: auto }
+
+        .spinner {
+            transform: translateY(-50px);
+        }
+
+        .loading {
+            height: 120vh !important;
+        }
+
+        .card {
+            flex-direction: column;
+            height: auto;
+            width: 80vw;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            flex-direction: column;
+            margin: 10px;
+        }
+
+        h2 { 
+            margin-bottom: 0;
+        }
+
+        .input-image-holder {
+            position: relative;
+            transform: none;
+            margin-bottom: 50px;
+            width: 80vw;
+            height: 80vw;
+        }
+
+        .results {
+            margin-left: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .data {
+            width: 95%;
+        }
+
+        .info {
+            position: relative;
+            bottom: 0px;
+            transform: translateX(8vw);
+            text-align: center;
+        }
+
+        .bar {
+            width: 300px;
+        }
+
+        .bar-text {
+            width: 300px !important;
+        }
+
+        #input {
+            z-index: 4;
+        }
+
+        #plus-icon {
+            z-index: 4;
+        }
+
+        .input-image img {
+            z-index: 2;
+            width: auto;
+            max-height: 75%;
+            max-width: 75%;
+        }
+
+        #image-bg {
+            z-index: 1;
+            max-height: 90%;
+            max-width: 90%;
+        }
+    }
+
+    .loading {
+        z-index: 9;
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .hidden {
+        opacity: 0;
+        display: none;
+        pointer-events: none;
+        z-index: -20;
+    }
+
+    .hide {
+        -webkit-animation-delay: loading-hide 1s forwards ease-in-out;
+        animation: loading-hide 1s forwards ease-in-out;
+        -webkit-animation-delay: 1s;
+        animation-delay: 1s;
+    }
+
+    .spinner {
+        z-index: 10;
+        width: 100px;
+        height: 100px;
+        align-self: center;
+        justify-self: center;
+        position: absolute;
+        margin: 100px auto;
+        -webkit-animation-delay: 1s;
+        animation-delay: 1s;
+    }
+
+    .double-bounce1, .double-bounce2 {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: rgb(255, 255, 255);
+        opacity: 0.6;
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+        -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+        animation: sk-bounce 2.0s infinite ease-in-out;
+    }
+
+    .double-bounce2 {
+        -webkit-animation-delay: -1.0s;
+        animation-delay: -1.0s;
+    }
+
+    @-webkit-keyframes sk-bounce {
+        0%, 100% { -webkit-transform: scale(0.0) }
+        50% { -webkit-transform: scale(1.0) }
+    }
+
+    @keyframes sk-bounce {
+        0%, 100% { 
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        } 50% { 
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+
+    @-webkit-keyframes loading-hide {
+        0% { -webkit-transform: translateX(0) }
+        100% { -webkit-transform: translateY(200vh) }
+    }
+
+    @keyframes loading-hide {
+        0% { 
+            transform: translateX(0);
+            -webkit-transform: translateX(0);
+        }  100% { 
+            transform: translateY(200vh);
+            -webkit-transform: translateY(200vh);
+        }
+    }
+
+    @-webkit-keyframes scanner {
+        0% { -webkit-top: 0 }
+        100% { -webkit-bottom: 0 }
+    }
+
+    @keyframes scanner {
+        0% { 
+            top: -20px;
+        }  100% { 
+            top: 420px;
+        }
+    }
+
+    @keyframes slide-in-bottom {
+    0% {
+        -webkit-transform: translateY(100px);
+                transform: translateY(100px);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateY(0);
+                transform: translateY(0);
+        opacity: 1;
+    }
+    }
+</style>
+</html>
